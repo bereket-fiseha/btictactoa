@@ -38,34 +38,46 @@ class _TicTacSettingState extends State<TicTacSetting> {
                 height: MediaQuery.of(context).size.height / 5,
               ),
               Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Theme.of(context).backgroundColor),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Consumer<SoundEffectSettingProvider>(
+                          builder: ((context, provider, child) =>
+                              SwitchListTile(
+                                title: const Text("Enable Sound"),
+                                value: provider.enableSound(),
+                                secondary:
+                                    const Icon(Icons.alarm, color: Colors.blue),
+                                onChanged: (bool value) {
+                                  provider.setEnableSound(value);
+                                },
+                              )),
+                        ),
+                        Consumer<DarkModeSettingProvider>(
+                          builder: ((context, provider, child) =>
+                              SwitchListTile(
+                                title: const Text("Dark Mode"),
+                                value: provider.isDarkModeEnabled(),
+                                secondary: const Icon(Icons.dark_mode_rounded,
+                                    color: Color.fromARGB(217, 243, 171, 46)),
+                                onChanged: (bool value) {
+                                  provider.toggleDarkMode(value);
+                                },
+                              )),
+                        )
+                      ])),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color: Theme.of(context).backgroundColor),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Consumer<SoundEffectSettingProvider>(
-                      builder: ((context, provider, child) => SwitchListTile(
-                            title: const Text("Enable Sound"),
-                            value: provider.enableSound(),
-                            secondary:
-                                const Icon(Icons.alarm, color: Colors.blue),
-                            onChanged: (bool value) {
-                              provider.setEnableSound(value);
-                            },
-                          )),
-                    ),
-                    Consumer<DarkModeSettingProvider>(
-                      builder: ((context, provider, child) => SwitchListTile(
-                            title: const Text("Dark Mode"),
-                            value: provider.isDarkModeEnabled(),
-                            secondary: const Icon(Icons.dark_mode_rounded,
-                                color: Color.fromARGB(217, 243, 171, 46)),
-                            onChanged: (bool value) {
-                              provider.toggleDarkMode(value);
-                            },
-                          )),
-                    ),
                     Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: Row(
@@ -127,11 +139,8 @@ class _TicTacSettingState extends State<TicTacSetting> {
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
                     Padding(
-                      padding: const EdgeInsets.all(18.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Row(
                         children: [
                           const Icon(FontAwesomeIcons.userTie),

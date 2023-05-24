@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:btictao/controller/tictaccontroller.dart';
-import 'package:btictao/provider/tictacstateprovider.dart';
 import 'package:confetti/confetti.dart';
 
 import 'package:flutter/material.dart';
@@ -25,6 +24,11 @@ class TicTacToa extends StatefulWidget {
 initState(BuildContext context) {}
 
 class _TicTacToaState extends State<TicTacToa> {
+  var stateMatrix = [
+    [Turn.N, Turn.N, Turn.N],
+    [Turn.N, Turn.N, Turn.N],
+    [Turn.N, Turn.N, Turn.N]
+  ];
   Turn currentTurn = Turn.N;
   bool gameOver = false;
   late TicTacController _gameController;
@@ -57,23 +61,18 @@ class _TicTacToaState extends State<TicTacToa> {
   void ticTacToaBoxOnTap(int row, int col) async {
     var soundEffect =
         Provider.of<SoundEffectSettingProvider>(context, listen: false);
-    var stateMatrixProvider =
-        Provider.of<TicTacStateProvider>(context, listen: false);
-
-    if (currentTurn == Turn.N || currentTurn == Turn.X) {
-      stateMatrixProvider.setStateMatrix(row, col, Turn.X);
-      setState(() {
+    setState(() {
+      if (currentTurn == Turn.N || currentTurn == Turn.X) {
+        stateMatrix[row][col] = Turn.X;
         currentTurn = Turn.O;
-      });
-    } else {
-      stateMatrixProvider.setStateMatrix(row, col, Turn.O);
-      setState(() {
-        currentTurn = Turn.X;
-      });
-    }
+      } else {
+        stateMatrix[row][col] = Turn.O;
 
-    var winner =
-        _gameController.checkWinner(stateMatrixProvider.getStateMatrix());
+        currentTurn = Turn.X;
+      }
+    });
+
+    var winner = _gameController.checkWinner(stateMatrix);
     if (soundEffect.enableSound() && winner == null) {
       if (currentTurn == Turn.X) {
         playAudio("asset/audio/ping.mp3");
@@ -106,10 +105,12 @@ class _TicTacToaState extends State<TicTacToa> {
   }
 
   void reset() {
-    var stateMatrixProvider =
-        Provider.of<TicTacStateProvider>(context, listen: false);
-    stateMatrixProvider.resetMatrix();
     setState(() {
+      stateMatrix = [
+        [Turn.N, Turn.N, Turn.N],
+        [Turn.N, Turn.N, Turn.N],
+        [Turn.N, Turn.N, Turn.N]
+      ];
       gameOver = false;
       gameWinner = null;
     });
@@ -135,40 +136,78 @@ class _TicTacToaState extends State<TicTacToa> {
       ),
       body: Column(
         children: [
-          Consumer<TicTacStateProvider>(
-            builder: (context, provider, child) => Column(
-                children: List<Widget>.generate(
-              3,
-              (index) => Row(
-                children: [
-                  TicTacBox(
-                    row: index,
-                    col: 0,
-                    turn: provider.getStateMatrix()[index][0],
-                    boxOnTap: ticTacToaBoxOnTap,
-                  ),
-                  TicTacBox(
-                    row: index,
-                    col: 1,
-                    turn: provider.getStateMatrix()[index][1],
-                    boxOnTap: ticTacToaBoxOnTap,
-                  ),
-                  TicTacBox(
-                    row: index,
-                    col: 2,
-                    turn: provider.getStateMatrix()[index][2],
-                    boxOnTap: ticTacToaBoxOnTap,
-                  )
-                ],
+          Row(
+            children: [
+              TicTacBox(
+                row: 0,
+                col: 0,
+                turn: stateMatrix[0][0],
+                boxOnTap: ticTacToaBoxOnTap,
               ),
-            )),
+              TicTacBox(
+                row: 0,
+                col: 1,
+                turn: stateMatrix[0][1],
+                boxOnTap: ticTacToaBoxOnTap,
+              ),
+              TicTacBox(
+                row: 0,
+                col: 2,
+                turn: stateMatrix[0][2],
+                boxOnTap: ticTacToaBoxOnTap,
+              )
+            ],
+          ),
+          Row(
+            children: [
+              TicTacBox(
+                row: 1,
+                col: 0,
+                turn: stateMatrix[1][0],
+                boxOnTap: ticTacToaBoxOnTap,
+              ),
+              TicTacBox(
+                row: 1,
+                col: 1,
+                turn: stateMatrix[1][1],
+                boxOnTap: ticTacToaBoxOnTap,
+              ),
+              TicTacBox(
+                row: 1,
+                col: 2,
+                turn: stateMatrix[1][2],
+                boxOnTap: ticTacToaBoxOnTap,
+              )
+            ],
+          ),
+          Row(
+            children: [
+              TicTacBox(
+                row: 2,
+                col: 0,
+                turn: stateMatrix[2][0],
+                boxOnTap: ticTacToaBoxOnTap,
+              ),
+              TicTacBox(
+                row: 2,
+                col: 1,
+                turn: stateMatrix[2][1],
+                boxOnTap: ticTacToaBoxOnTap,
+              ),
+              TicTacBox(
+                row: 2,
+                col: 2,
+                turn: stateMatrix[2][2],
+                boxOnTap: ticTacToaBoxOnTap,
+              )
+            ],
           ),
           const SizedBox(
             height: 50,
           ),
           Stack(
             children: [
-              gameOver ? const ConfettiContainer() : Container(),
+              const ConfettiContainer(),
               Center(
                 child: Column(
                   children: [
